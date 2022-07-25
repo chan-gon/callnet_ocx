@@ -45,6 +45,7 @@ if(isset($_REQUEST['btn_break_txt']) && !empty($_REQUEST['btn_break_txt'])){
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <script src="../../inc/js/log.js?ver=0.1"></script>
 <style type="text/css">
+<!--
 	A:link   { text-decoration: none;  color: #000000;}
 	A:visited   { text-decoration: none; color: #000000;}
 	A:active   { text-decoration: none; }
@@ -78,10 +79,12 @@ if(isset($_REQUEST['btn_break_txt']) && !empty($_REQUEST['btn_break_txt'])){
 		font-weight: bold;
 		line-height: normal;
 	}
+//-->
 
  #telno {font-size : 9pt};
 </style>
 <script language="JavaScript" type="text/JavaScript">
+
 
 function open_extension() {
 
@@ -90,6 +93,10 @@ function open_extension() {
 
 }
 
+
+
+
+<!--
 // 상담원 통화 시간 표시 함수 시작
 var clockstart = null;
 var timeID = null;
@@ -153,10 +160,11 @@ function clockStop() {
 	//parent.mainFrame.SangdamForm.call_end_time.value=nowTime;
 }
 // 상담원 통화 시간 표시 함수 끝
+//-->
 </script>
 </head>
 
-<body onload="login();" onbeforeunload="beforeClose()">
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" onload="login();" onbeforeunload="beforeClose()">
 
 <table width="450" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
@@ -286,7 +294,7 @@ function clockStop() {
 </script>
 
 
-<script>
+<script language="javascript">
 
 	   // MOIMSTONE, FiX {
 	   var ON  = 1;
@@ -333,7 +341,8 @@ function clockStop() {
 </script>
 
 
-<script>
+<script language="javascript">
+<!--
 //로그인
 function login()  {
 	if(document.fm.btn_login_txt.value == "로그인"){
@@ -542,7 +551,7 @@ function endready(){
 
 //호전환 시도
 function consult(){
-	//var dialcode = '<?//=$dial_code?>//';
+	//var dialcode = '<?=$dial_code?>';
 	var dialcode = '9';
 	var str = document.getElementById("btn_consult").src;
 	var tmp = String(str).substring(String(str).length, String(str).length-10);
@@ -670,11 +679,16 @@ function sleep(ms){
 
 <SCRIPT language=javascript event=IncomingCall for=unpbx>
 
+
+
 	document.fm.status.value = "전화가 왔습니다\n" + document.fm.status.value;
 	document.getElementById("btn_answer").src	="../../img/bub_20.gif";
 	var cid		= fm.unpbx.cid;
 	var dnis = fm.unpbx.juminno;
 	var space = fm.unpbx.space;
+	
+	
+
 
 	if(cid.substr(0,2) == "02"){
 		if(cid.length ==10){
@@ -692,9 +706,14 @@ function sleep(ms){
 		}
 	}
 
+
 	document.fm.popchk.value = "0";
 	document.fm.iogubun.value = "1";
 	document.fm.telno.value = cid;
+
+
+
+
 
   var date = new Date();
   var y = date.getFullYear();
@@ -702,17 +721,27 @@ function sleep(ms){
   var d = date.getDate();
   var currentDate = y + "-" + m + "-" + d;
 
+
 	pause(700);
+
+
+	
 
 	res = window.showModalDialog("incall.php?cid="+cid+"&space="+space+"&dnis="+dnis, window, "dialogWidth:570px; dialogHeight:300px; resizable:yes; center:yes; help:no; scroll:yes; status:no;");
 
+
+	
 	clockStart();
 
 	var tmp_res = res.split(",");
 	var Cust_cd = tmp_res[0];
 	var Call_No = tmp_res[1];
 
+
 	//parent.mainFrame.location.href = "../main/main.php?action=new&cust_idx="+Cust_cd+"&call_no="+Call_No+"&cid="+cid+"&space="+space;
+
+
+
 
 </SCRIPT>
 
@@ -738,6 +767,7 @@ document.getElementById("btn_breakon").src		="../../img/bub_04.gif";
 </SCRIPT>
 
 <SCRIPT language=javascript event=LogoutOK for=unpbx>
+<!--
 //document.fm.status.value = "로그아웃되었습니다.\n" + document.fm.status.value;
 document.fm.btn_login_txt.value = "로그인";
 document.getElementById("btn_login").src	="../../img/buc_01.gif";
@@ -757,6 +787,7 @@ parent.location.href("../../logout_ok.php");
 
 
 <SCRIPT language=javascript event=OffHook for=unpbx>
+<!--
 document.fm.status.value = "수화기를 들었습니다.\n" + document.fm.status.value;
 
 document.getElementById("btn_makecall").src	="../../img/bub_06.gif";
@@ -770,6 +801,7 @@ clockStart();
 </SCRIPT>
 
 <script language="javascript" event=OnHook for=unpbx>
+
 
 document.fm.status.value = "수화기를 내려놓음.\n" + document.fm.status.value;
 document.getElementById("btn_disconnect").src	="../../img/bua_21.gif";
@@ -908,6 +940,7 @@ clockStop();
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallConnected for=unpbx>
+<!--
 document.fm.status.value = "통화중\n" + document.fm.status.value;
 document.getElementById("btn_makecall").src	="../../img/bua_06.gif";
 document.getElementById("btn_consult").src	="../../img/bub_07.gif";
@@ -917,16 +950,19 @@ document.getElementById("btn_answer").src	="../../img/bua_20.gif";
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallConsulting for=unpbx>
+<!--
 //document.fm.status.value = "호전환요청중\n" + document.fm.status.value;
 //-->
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallConsulted for=unpbx>
+<!--
 //document.fm.status.value = "호전환요청완료\n" + document.fm.status.value;
 //-->
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallCanceled for=unpbx>
+<!--
 //daegi();
 
 //clockStop();
@@ -934,16 +970,19 @@ document.getElementById("btn_answer").src	="../../img/bua_20.gif";
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallReconnected for=unpbx>
+<!--
 //document.fm.status.value = "호전환취소중\n" + document.fm.status.value;
 //-->
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallTransferred for=unpbx>
+<!--
 //document.fm.status.value = "호전환완료\n" + document.fm.status.value;
 //-->
 </SCRIPT>
 
 <SCRIPT language=javascript event=CallConferenced for=unpbx>
+<!--
 document.fm.status.value = "3자통화연결\n" + document.fm.status.value;
 //-->
 </SCRIPT>

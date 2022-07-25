@@ -51,7 +51,7 @@ function ConvertTime($strValue)
 }
 
 //' 주민번호 or 사업자번호 "-"으로 연결
-/*function ConvertJumin($strValue)
+function ConvertJumin($strValue)
 {
 	if (strlen($strValue) == 13) {
 		$ConvertJumin = substr($strValue,0,6)."-".substr($strValue,6,7);
@@ -62,7 +62,7 @@ function ConvertTime($strValue)
 	} else {
 		return $strValue;
 	}
-}*/
+}
 
 //' 주민번호 or 사업자번호 "-"으로 연결 후 주민번호 뒷자리 6자리를 *로 표시
 function ConvertJumin($strValue)
