@@ -1,13 +1,19 @@
 ﻿<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<?
+<?php
 date_default_timezone_set('Asia/Seoul');
 function db_connect()
 {
-	$dbset = $_COOKIE['dbset'];
-	$db = $_COOKIE['db'];
-	$host = $_COOKIE['host'];
-	$user = $_COOKIE['user'];
-	$pass = $_COOKIE['pass'];
+//	$dbset = $_COOKIE['dbset'];
+//	$db = $_COOKIE['db'];
+//	$host = $_COOKIE['host'];
+//	$user = $_COOKIE['user'];
+//	$pass = $_COOKIE['pass'];
+
+    $dbset = "PostgreSQL";
+    $db = "ubigen_0307";
+    $host = "192.168.1.9";
+    $user = "ubigen";
+    $pass = "84265";
 //	echo $dbset ."<br>". $db ."<br>". $user . "<br>". $pass;
 	if( $dbset == "PostgreSQL" )
 	{

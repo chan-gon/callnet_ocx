@@ -1,6 +1,6 @@
 ﻿<?session_start();?>
-<?include "../../inc/db/db.php"; $ipcc_db = db_connect();?>
-<?include "../../inc/common/cn_function.php"; ?>
+<?include "inc/db/db.php"; $ipcc_db = db_connect();?>
+<?include "inc/common/cn_function.php"; ?>
 
 <?
 $datetemp = date("Ymd");
@@ -28,7 +28,7 @@ switch ($pre_space) {
 <head>
 	<title>전화가 왔습니다</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" href="../../inc/css/common.css" type="text/css">
+	<link rel="stylesheet" href="inc/css/common.css" type="text/css">
 	<script language="javascript">
 		function windowOnClose(val){
 			//시스템메뉴 종료버튼으로 종료

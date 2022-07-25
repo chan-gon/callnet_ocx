@@ -1,4 +1,4 @@
-<?
+<?php
 //시간환산
 function OnTimeSet($TotTime)
 {
