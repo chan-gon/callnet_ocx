@@ -1,0 +1,366 @@
+<script language="JScript">
+<!-- Begin  //IE 4.0 버전 이하의 브라우저는 이 태그를 BODY 태그에 넣으세요 -->
+//****************************************************************************
+// PopCalendar 4.1, Emailware(please mail&commend me if u like it)
+// Originally coded by Liming(Victor) Weng, email:victorwon@netease.com
+// Release date: 2000.5.9
+// Anyone may modify it to satify his needs, but please leave this comment ahead.
+//****************************************************************************
+
+var gdCtrl = new Object();
+var gcGray = "#777777" // "#000000";
+var gcGreen = "#333333";
+var gcblue = "#006699";
+var gcToggle = "#ffffcc";
+var gcBG = "#dddddd";
+var gcYello = "#ffcc00" ;
+
+var gdCurDate 	= new Date()		;
+var giYear 	= gdCurDate.getFullYear();
+var giMonth 	= gdCurDate.getMonth()+1;
+var giDay 	= gdCurDate.getDate()	;
+var giDay_tmp 	= gdCurDate.getDate()	;
+var giWeek_tmp 	= gdCurDate.getDate()	; // 해당월에 대한 주 표시
+var giDate_tmp 	= gdCurDate.getDate()	; // 해당주의 요일 표시
+var VicPopCal 	= new Object()		;
+
+var gdFormat ;
+
+var strSeperator = "";
+var gFieldSep = "*";
+var gFirstYear	= 2006 ; //첫번째 검색년도
+var gIncYear	= 11 ;   //증가할수 있는 년도
+
+//****************************************************************************
+// Param: popCtrl is the widget beyond which you want this calendar to appear;
+//        dateCtrl is the widget into which you want to put the selected date;
+//        popCal is the widget to display the calendar;
+// i.e.: <input type="text" name="dc" style="text-align:center" readonly><INPUT type="button" value="V" onclick="fPopCalendar(dc,dc,popCal);return false">
+//****************************************************************************
+function fPopCalendar(popCtrl, dateCtrl, popCal, fdateCtrl, fieldSep, format){
+  parent.event.cancelBubble=true;
+  VicPopCal = popCal;
+  gdCtrl = dateCtrl;
+  gFieldSep = fieldSep ;
+  gdFormat = format;
+  var	styleobj =  eval(fdateCtrl)	;
+  if ( styleobj.value.length == 8 ) {
+  	if (gdFormat==123) {
+		gdCurDate 	= new Date(styleobj.value.substring(0,4),styleobj.value.substring(4,6)-1,styleobj.value.substring(6,8));
+	}else if (gdFormat==231) {
+		gdCurDate 	= new Date(styleobj.value.substring(4,8),styleobj.value.substring(0,2)-1,styleobj.value.substring(2,4));
+	}else if (gdFormat==321) {
+		gdCurDate 	= new Date(styleobj.value.substring(4,8),styleobj.value.substring(2,4)-1,styleobj.value.substring(0,2));
+	}
+  } else if( styleobj.value.length == 10 ) {
+  	if (gdFormat==123) {
+		gdCurDate 	= new Date(styleobj.value.substring(0,4),styleobj.value.substring(5,7)-1,styleobj.value.substring(8,10));
+	}else if (gdFormat==231) {
+		gdCurDate 	= new Date(styleobj.value.substring(6,10),styleobj.value.substring(0,2)-1,styleobj.value.substring(3,5));
+	}else if (gdFormat==321) {
+		gdCurDate 	= new Date(styleobj.value.substring(6,10),styleobj.value.substring(5,7)-1,styleobj.value.substring(0,2));
+	}
+
+  } else {
+	gdCurDate 	= new Date();
+  }
+  giYear 	= gdCurDate.getFullYear();
+  giMonth 	= gdCurDate.getMonth()+1;
+  giDay 	= gdCurDate.getDate();
+  giDay_tmp 	= gdCurDate.getDate();
+  giDate_tmp 	= gdCurDate.getDay();
+
+  fSetYearMon(giYear, giMonth);
+  var point = fGetXY(popCtrl);
+  with (VicPopCal.style) {
+          left = point.x;
+        top  = point.y+popCtrl.offsetHeight;
+        visibility = 'visible';
+  }
+  VicPopCal.focus();
+  // in order to make compatible with IE4.x , here I cut two line below off.
+  // VicPopCal.all("popFrame").width=document.all("popTable").offsetWidth;
+  // VicPopCal.all("popFrame").height=document.all("popTable").offsetHeight;
+  // if u only target on IE5.x, uncommented them and delete the width&height prop in <IFrame> tag
+  // thus you will find the 3rd para in fDrawCal() now works perfectly.
+}
+
+function fSetDate(iYear, iMonth, iDay){
+	var iMonthStr = (iMonth < 10 )? '0'+iMonth : iMonth ;
+	var iDayStr = (iDay < 10 )? '0'+iDay : iDay ;
+<!--  gdCtrl.value = iMonth+"-"+iDay+"-"+iYear; //Here, you could modify the locale as you need !!!! -->
+  gdCtrl.value = iYear + strSeperator + iMonthStr +strSeperator+iDayStr ; //Here, you could modify the locale as you need !!!!
+
+  	if (gdFormat==123) {
+		gdCtrl.value = iYear + strSeperator + iMonthStr + strSeperator + iDayStr ;
+	}else if (gdFormat==231) {
+		gdCtrl.value = iMonthStr +strSeperator + iDayStr + strSeperator + iYear ;
+	}else if (gdFormat==321) {
+		gdCtrl.value = iDayStr + strSeperator + iMonthStr + strSeperator + iYear ;
+	}
+
+	// 2007년 02월 12일 시간 추가 - 박현기
+	var iTimeStr = document.calendar.tbSelTime.value;
+	var iMinuiteStr = document.calendar.tbSelMinuite.value;
+	parent.document.SangdamForm.SdRecallTimeFr.value = iTimeStr + ":" + iMinuiteStr + ":00";
+
+   //수정 장기석 gdCtrl삽입	
+  parent.setDate(iYear,iMonthStr,iDayStr, gdCtrl);
+  VicPopCal.style.visibility = "hidden";
+}
+
+function fSetSelected(aCell){
+  var iOffset = 0;
+  var iYear = parseInt(tbSelYear.value);
+  var iMonth = parseInt(tbSelMonth.value);
+
+  aCell.bgColor = gcBG;
+// 한계시 문제 있음..
+  with (aCell.children["cellText"]){
+          var iDay = parseInt(innerText);
+          if (color==gcGray) iOffset = (Victor<10)?-1:1;
+        iMonth += iOffset;
+        if (iMonth<1) {
+                iYear--;
+                iMonth = 12;
+        }else if (iMonth>12){
+                iYear++;
+                iMonth = 1;
+        }
+  }
+
+  // 최우정 수정 (2001.09.19)
+  if ( gFieldSep == 'F' ) {
+  	if ((iYear < giYear ) || ( (iYear == giYear ) && ( iMonth < giMonth )) ||
+  		( (iYear == giYear ) && ( iMonth == giMonth ) && ( iDay < giDay )) ) {
+
+  		alert ( "선택할 수 없는 과거입니다.") ;
+  		return false ;
+  	}
+  }
+
+  fSetDate(iYear, iMonth, iDay);
+}
+
+function Point(iX, iY){
+        this.x = iX;
+        this.y = iY;
+}
+
+
+// Modified By 이 대희
+// Modified Date : 2001.09.28
+function fBuildCal(iYear, iMonth) {
+  var aMonth=new Array();
+  for(i=1;i<7;i++)
+          aMonth[i]=new Array(i);
+
+  var dCalDate=new Date(iYear, iMonth-1, 1);
+  var iDayOfFirst=dCalDate.getDay();
+  var iDaysInMonth=new Date(iYear, iMonth, 0).getDate();
+  var iOffsetLast=new Date(iYear, iMonth-1, 0).getDate()-iDayOfFirst+1;
+  var iDate = 1;
+  var iNext = 1;
+
+  for (d = 0; d < 7; d++) {
+        if ( giDay_tmp == iDate ) giWeek_tmp = 0 ; // 주를 찾는다.
+        aMonth[1][d] = (d<iDayOfFirst)?-(iOffsetLast+d):iDate++;
+  }
+
+  for (w = 2; w < 7; w++)
+          for (d = 0; d < 7; d++) {
+	        if ( giDay_tmp == iDate ) giWeek_tmp = w-1 ; // 주를 찾는다.
+                aMonth[w][d] = (iDate<=iDaysInMonth)?iDate++:-(iNext++);
+ }
+
+ if ( ( giMonth != iMonth) || (giYear != iYear )) giWeek_tmp = -1 ;// ParameterDate와 다른 경우 표시를 하지 않는다.
+
+  return aMonth;
+}
+
+function fDrawCal(iYear, iMonth, iCellWidth, iDateTextSize) {
+<!--  var WeekDay = new Array("Su","Mo","Tu","We","Th","Fr","Sa"); -->
+  var WeekDay = new Array("일","월","화","수","목","금","토");
+  var styleTD = " bgcolor='"+gcBG+"' width='"+iCellWidth+"' bordercolor='"+gcBG+"' valign='middle' align='center'  style='font:normal "+iDateTextSize+" Courier;";            //Coded by Liming Weng(Victor Won)  email:victorwon@netease.com
+  var styleTD1 = " bgcolor='"+gcYello+"' width='"+iCellWidth+"' bordercolor='"+gcYello+"' valign='middle' align='center'  style='font:bold "+iDateTextSize+" Courier;";
+
+  with (document) {
+        write("<tr>");
+        for(i=0; i<7; i++)
+                write("<td "+styleTD1+"color:#000000' >" + WeekDay[i] + "</td>");
+        write("</tr>");
+
+          for (w = 1; w < 7; w++) {
+                write("<tr>");
+                for (d = 0; d < 7; d++) {
+                        write("<td id=calCell "+styleTD+"cursor:hand;' onMouseOver='this.bgColor=gcToggle' onMouseOut='this.bgColor=gcBG' onclick='fSetSelected(this)'>");
+                        write("<font id=cellText Victor='Liming Weng'> </font>");
+                        write("</td>")
+                }
+                write("</tr>");
+        }
+  }
+}
+
+function fUpdateCal(iYear, iMonth) {
+  // 최우정 수정 (2001.09.19)
+  if ( gFieldSep == 'F' ) {
+  	if ((iYear < giYear ) || ( (iYear == giYear ) && ( iMonth < giMonth ))) {
+  	  for ( im = 0 ; im < tbSelMonth.length ; im++)
+	        if (tbSelMonth.options[im].value == giMonth)
+			tbSelMonth.options[im].selected = true;
+	  for (i = 0; i < tbSelYear.length; i++)
+	        if (tbSelYear.options[i].value == giYear)
+	                tbSelYear.options[i].selected = true;
+
+  		alert ( "선택할 수 없는 과거입니다.") ;
+  		return false ;
+  	}
+  }
+  myMonth = fBuildCal(iYear, iMonth);
+  var i = 0;
+  for (w = 0; w < 6; w++)
+        for (d = 0; d < 7; d++)
+                with (cellText[(7*w)+d]) {
+                        Victor = i++;
+                        if ( (w == giWeek_tmp ) && ( d == giDate_tmp )) {
+                                color = "#006699";
+                                innerText = myMonth[w+1][d];
+                        }
+                        else if (myMonth[w+1][d]<0) {
+                                color = gcGray;
+								innerText = -myMonth[w+1][d];
+                        }else{
+                                color = ((d==0)||(d==6))?"#990000":"black";
+                                innerText = myMonth[w+1][d];
+                        }
+                }
+}
+
+function fSetYearMon(iYear, iMon){
+  // 최우정 수정 (2001.09.19)
+  if ( gFieldSep == 'F' ) {
+  	if ((iYear < giYear ) || ( (iYear == giYear ) && ( iMon < giMonth ))) {
+  		alert ( "선택할 수 없는 과거입니다.") ;
+  		return ;
+  	}
+  }
+  tbSelMonth.options[iMon-1].selected = true;
+  for (i = 0; i < tbSelYear.length; i++)
+        if (tbSelYear.options[i].value == iYear)
+                tbSelYear.options[i].selected = true;
+  fUpdateCal(iYear, iMon);
+}
+
+function fPrevMonth(){
+  var iMon = tbSelMonth.value;
+  var iYear = tbSelYear.value;
+
+  if (--iMon<1) {
+          iMon = 12;
+          iYear-- ;
+  }
+
+  if ( iYear < gFirstYear ) {
+  	iYear = gFirstYear ;
+  	iMon	= 1 ;
+  }
+
+  fSetYearMon(iYear, iMon);
+}
+
+function fNextMonth(){
+  var iMon = tbSelMonth.value;
+  var iYear = tbSelYear.value;
+
+  if (++iMon>12) {
+          iMon = 1;
+          iYear++;
+  }
+
+  if ( iYear >= gFirstYear+gIncYear ) {
+  	iYear = gFirstYear+gIncYear-1 ;
+  	iMon	= 12 ;
+  }
+
+  fSetYearMon(iYear, iMon);
+}
+
+function fGetXY(aTag){
+  var oTmp = aTag;
+  var pt = new Point(0,10);
+  do {
+          pt.x += oTmp.offsetLeft;
+          pt.y += oTmp.offsetTop;
+          oTmp = oTmp.offsetParent;
+  } while(oTmp.tagName!="BODY");
+  return pt;
+}
+
+<!--var gMonths = new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  -->
+var gMonths = new Array("1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월");
+
+with (document) {
+	write("<table border='0' bgcolor='#000000' width='220' cellpadding='5' cellspacing='1'>");
+	write("<TR>");
+	write("<td bgcolor='#F6F6F6'>");
+	write("<table id='popTable' border='0' bgcolor='#F6F6F6' width='210' cellpadding='5'>");
+	write("<form name='calendar'>");
+	write("<TR><TD align='center'>");
+	write("<font style='cursor:hand; font:9pt;'>시간 : ");
+	write(" <select name='tbSelTime' Victor='Won'>");
+	for (i=0; i<24; i++) {
+		if (i < 10) {
+			write("<option value='0"+i+"'>0"+i+"</option>");
+		} else {
+			write("<option value='"+i+"'>"+i+"</option>");
+		}
+	}
+	write("</SELECT>");
+	write("시 ");
+	write(" <select name='tbSelMinuite' Victor='Won'>");
+	for (i=0; i<6; i++) {
+		write("<option value='"+i+"0'>"+i+"0</option>");
+	}
+	write("</SELECT>");
+	write("분</font>");
+	write("</TD></TR>");
+	write("</form>");
+	write("<TR>");
+	write("<td valign='middle' align='center'><input type='button' name='PrevMonth' value='<' style='height:20;width:20;FONT:16 Fixedsys' onClick='fPrevMonth()'>");
+	write(" <SELECT name='tbSelYear' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' Victor='Won'>");
+	for(i=gFirstYear;i<gFirstYear + gIncYear;i++)
+		write("<OPTION value='"+i+"'>"+i+"</OPTION>");
+	write("</SELECT>");
+	write(" <select name='tbSelMonth' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' Victor='Won'>");
+	for (i=0; i<12; i++)
+		write("<option value='"+(i+1)+"'>"+gMonths[i]+"</option>");
+	write("</SELECT>");
+	write(" <input type='button' name='PrevMonth' value='>' style='height:20;width:20;FONT:16 Fixedsys' onclick='fNextMonth()'>");
+	write("</td>");
+	write("</TR><TR>");
+	write("<td align='center'>");
+	write("<DIV style='background-color:#666666;'><table width='100%' border='0' cellspacing='1' cellpadding='3'>");
+	fDrawCal(giYear, giMonth, 19, 12);
+	write("</table></DIV>");
+	write("</td>");
+	write("</TR>");
+	write("<TR><TD align='center'>");
+	write("<font style='cursor:hand; font:9pt;' onclick='fSetDate("+giYear+","+giMonth+","+giDay+")' onMouseOver='this.style.color=gcblue' onMouseOut='this.style.color=0'>오늘 : "+giYear+"년"+gMonths[giMonth-1]+""+giDay+"일 </font>");
+	write("</TD></TR>");
+	write("</TD></TR>");
+	write("</TABLE>");
+	write("</td>");
+	write("</TR>");
+	write("<!--");
+	write("<TR>");
+	write("<TD align='center'>");
+	write("<input type='button' value='close' onClick='self.close();'>");
+	write("</TD>");
+	write("</TR>");
+	write("//-->");
+	write("</TABLE>");
+}
+// End -- Coded by Liming Weng, email:victorwon@netease.com -->
+</script>
+
