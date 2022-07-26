@@ -790,7 +790,7 @@ if(isset($_REQUEST['btn_break_txt']) && !empty($_REQUEST['btn_break_txt'])){
 </SCRIPT>
 
 <SCRIPT language=javascript event=LogoutOK for=unpbx>
-    //document.fm.status.value = "로그아웃되었습니다.\n" + document.fm.status.value;
+    document.fm.status.value = "로그아웃되었습니다.\n";
     document.fm.btn_login_txt.value = "로그인";
     document.getElementById("btn_login").src = "img/buc_01.gif";
     // document.getElementById("btn_getagents").src="../../img/bua_03.gif";
@@ -803,7 +803,7 @@ if(isset($_REQUEST['btn_break_txt']) && !empty($_REQUEST['btn_break_txt'])){
     //document.getElementById("btn_breakoff").src	="../../img/bua_05.gif";
     //document.getElementById("btn_eduon").src	="../../img/bua_40.gif";
     //document.getElementById("btn_eduoff").src	="../../img/bua_41.gif";
-    parent.location.href("index.php");
+    //parent.location.href("index.php");
     //-->
 </SCRIPT>
 
