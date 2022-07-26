@@ -398,11 +398,11 @@ if(isset($_REQUEST['btn_break_txt']) && !empty($_REQUEST['btn_break_txt'])){
 
 
             login_check = fm.unpbx.Login(fm.AgID.value, fm.AgLineNo.value);
-            alert("로그인 성공");
+            //alert("로그인 성공");
             //var cnf = ConnectDevice();
         } else {
-            alert("로그인 실패");
-            //fm.unpbx.Logout();
+            //alert("로그인 실패");
+            fm.unpbx.Logout();
         }
     }
 
